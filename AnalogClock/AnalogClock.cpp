@@ -53,6 +53,9 @@ INT_PTR CALLBACK DialogProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
     static bool isDigital = true;
 
+    static HPEN hPen;
+    static HPEN hSecondPen;
+
     //ダイアログプロシージャ
     switch (uMsg)
     {
@@ -142,6 +145,18 @@ INT_PTR CALLBACK DialogProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
             DRAFT_QUALITY,        // フォントの出力品質
             DEFAULT_PITCH,        // フォントのピッチとファミリを指定
             L"ＭＳ Ｐゴシック" // フォント名
+        );
+
+        hPen = CreatePen(
+            PS_SOLID,
+            4,
+            RGB(0, 0, 0)
+        );
+
+        hSecondPen = CreatePen(
+            PS_SOLID,
+            1,
+            RGB(255, 0, 0)
         );
         return TRUE;
     }
@@ -244,28 +259,39 @@ INT_PTR CALLBACK DialogProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
             int scaleLen = 7; // 目盛りの長さ
             // 目盛りを描画
             for (int i = 0; i < 12; i++) {
-                float fromX = (radius - scaleLen) * sin(2 * M_PI / 12.0 * i);
-                float toX = radius * sin(2 * M_PI / 12.0 * i);
-                float fromY = (radius - scaleLen) * cos(2 * M_PI / 12.0 * i);
-                float toY = radius * cos(2 * M_PI / 12.0 * i);
+                double fromX = (radius - scaleLen) * sin(2 * M_PI / 12.0 * i);
+                double toX = radius * sin(2 * M_PI / 12.0 * i);
+                double fromY = (radius - scaleLen) * cos(2 * M_PI / 12.0 * i);
+                double toY = radius * cos(2 * M_PI / 12.0 * i);
                 MoveToEx(hdc, centerX + fromX, centerY + fromY, NULL);
                 LineTo(hdc, centerX + toX, centerY + toY);
             }
+
+            SelectObject(hdc, hPen);
             // 短針を描画
             int shortLen = 40; // 短針の長さ
             int hour = stTime.wHour % 12;
-            float toX = shortLen * sin(2 * M_PI / 12.0 * (hour + stTime.wMinute / 60.0));
-            float toY = shortLen * cos(2 * M_PI / 12.0 * hour);
+            double toX = shortLen * sin(2 * M_PI / 12.0 * (hour + stTime.wMinute / 60.0));
+            double toY = shortLen * cos(2 * M_PI / 12.0 * hour);
             MoveToEx(hdc, centerX, centerY, NULL);
             LineTo(hdc, centerX + toX, centerY - toY);
 
             // 長針を描画
-            int longLen = 80; // 短針の長さ
+            int longLen = 75; // 短針の長さ
             toX = longLen * sin(2 * M_PI / 60.0 * stTime.wMinute);
             toY = longLen * cos(2 * M_PI / 60.0 * stTime.wMinute);
             MoveToEx(hdc, centerX, centerY, NULL);
             LineTo(hdc, centerX + toX, centerY - toY);
 
+            // 秒針を描画
+            SelectObject(hdc, hSecondPen);
+            int secondLen = 88; // 秒針の長さ
+            toX = secondLen * sin(2 * M_PI / 60.0 * stTime.wSecond);
+            toY = secondLen * cos(2 * M_PI / 60.0 * stTime.wSecond);
+            MoveToEx(hdc, centerX, centerY, NULL);
+            LineTo(hdc, centerX + toX, centerY - toY);
+
+ 
             EndPaint(hDlg, &ps);
         }
         return TRUE;
@@ -276,6 +302,8 @@ INT_PTR CALLBACK DialogProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
     case WM_DESTROY:
         DeleteObject(hFont);
         DeleteObject(hAmPmFont);
+        DeleteObject(hPen);
+        DeleteObject(hSecondPen);
         PostQuitMessage(0);
         return TRUE;
     }
