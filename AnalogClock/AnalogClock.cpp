@@ -244,18 +244,18 @@ INT_PTR CALLBACK DialogProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
             int scaleLen = 7; // 目盛りの長さ
             // 目盛りを描画
             for (int i = 0; i < 12; i++) {
-                float fromX = (radius - scaleLen) * sin(2 * M_PI / 12.0 * i);
-                float toX = radius * sin(2 * M_PI / 12.0 * i);
-                float fromY = (radius - scaleLen) * cos(2 * M_PI / 12.0 * i);
-                float toY = radius * cos(2 * M_PI / 12.0 * i);
+                double fromX = (radius - scaleLen) * sin(2 * M_PI / 12.0 * i);
+                double toX = radius * sin(2 * M_PI / 12.0 * i);
+                double fromY = (radius - scaleLen) * cos(2 * M_PI / 12.0 * i);
+                double toY = radius * cos(2 * M_PI / 12.0 * i);
                 MoveToEx(hdc, centerX + fromX, centerY + fromY, NULL);
                 LineTo(hdc, centerX + toX, centerY + toY);
             }
             // 短針を描画
             int shortLen = 40; // 短針の長さ
             int hour = stTime.wHour % 12;
-            float toX = shortLen * sin(2 * M_PI / 12.0 * (hour + stTime.wMinute / 60.0));
-            float toY = shortLen * cos(2 * M_PI / 12.0 * hour);
+            double toX = shortLen * sin(2 * M_PI / 12.0 * (hour + stTime.wMinute / 60.0));
+            double toY = shortLen * cos(2 * M_PI / 12.0 * hour);
             MoveToEx(hdc, centerX, centerY, NULL);
             LineTo(hdc, centerX + toX, centerY - toY);
 
