@@ -53,6 +53,8 @@ INT_PTR CALLBACK DialogProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
     static bool isDigital = true;
 
+    static HPEN hPen;
+
     //ダイアログプロシージャ
     switch (uMsg)
     {
@@ -143,13 +145,20 @@ INT_PTR CALLBACK DialogProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
             DEFAULT_PITCH,        // フォントのピッチとファミリを指定
             L"ＭＳ Ｐゴシック" // フォント名
         );
+
+        hPen = CreatePen(
+            PS_SOLID,
+            4,
+            RGB(0, 0, 0)
+        );
+
         return TRUE;
     }
     case WM_COMMAND:
         switch (LOWORD(wParam)) {
         case IDC_RADIO_DIGITAL:
             if (HIWORD(wParam) == BN_CLICKED) {
-                isDigital = true; 
+                isDigital = true;
             }
             return TRUE;
         case IDC_RADIO_ANALOG:
@@ -251,6 +260,8 @@ INT_PTR CALLBACK DialogProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
                 MoveToEx(hdc, centerX + fromX, centerY + fromY, NULL);
                 LineTo(hdc, centerX + toX, centerY + toY);
             }
+
+            SelectObject(hdc, hPen);
             // 短針を描画
             int shortLen = 40; // 短針の長さ
             int hour = stTime.wHour % 12;
@@ -260,7 +271,7 @@ INT_PTR CALLBACK DialogProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
             LineTo(hdc, centerX + toX, centerY - toY);
 
             // 長針を描画
-            int longLen = 80; // 短針の長さ
+            int longLen = 75; // 短針の長さ
             toX = longLen * sin(2 * M_PI / 60.0 * stTime.wMinute);
             toY = longLen * cos(2 * M_PI / 60.0 * stTime.wMinute);
             MoveToEx(hdc, centerX, centerY, NULL);
@@ -276,6 +287,7 @@ INT_PTR CALLBACK DialogProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
     case WM_DESTROY:
         DeleteObject(hFont);
         DeleteObject(hAmPmFont);
+        DeleteObject(hPen);
         PostQuitMessage(0);
         return TRUE;
     }
