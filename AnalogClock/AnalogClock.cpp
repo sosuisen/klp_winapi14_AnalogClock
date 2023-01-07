@@ -272,7 +272,7 @@ INT_PTR CALLBACK DialogProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
             int shortLen = 40; // 短針の長さ
             int hour = stTime.wHour % 12;
             double toX = shortLen * sin(2 * M_PI / 12.0 * (hour + stTime.wMinute / 60.0));
-            double toY = shortLen * cos(2 * M_PI / 12.0 * hour);
+            double toY = shortLen * cos(2 * M_PI / 12.0 * (hour + stTime.wMinute / 60.0));
             MoveToEx(hdc, centerX, centerY, NULL);
             LineTo(hdc, centerX + toX, centerY - toY);
 
