@@ -239,33 +239,8 @@ INT_PTR CALLBACK DialogProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
         }
         else {
             hdc = BeginPaint(hDlg, &ps);
-            int centerX = 235; // 時計の中心のX座標
-            int centerY = 100;  // 時計の中心のY座標
-            int radius = 90;  // 時計の半径
-            int scaleLen = 7; // 目盛りの長さ
-            // 目盛りを描画
-            for (int i = 0; i < 12; i++) {
-                double fromX = (radius - scaleLen) * sin(2 * M_PI / 12.0 * i);
-                double toX = radius * sin(2 * M_PI / 12.0 * i);
-                double fromY = (radius - scaleLen) * cos(2 * M_PI / 12.0 * i);
-                double toY = radius * cos(2 * M_PI / 12.0 * i);
-                MoveToEx(hdc, centerX + fromX, centerY + fromY, NULL);
-                LineTo(hdc, centerX + toX, centerY + toY);
-            }
-            // 短針を描画
-            int shortLen = 40; // 短針の長さ
-            int hour = stTime.wHour % 12;
-            double toX = shortLen * sin(2 * M_PI / 12.0 * (hour + stTime.wMinute / 60.0));
-            double toY = shortLen * cos(2 * M_PI / 12.0 * (hour + stTime.wMinute / 60.0));
-            MoveToEx(hdc, centerX, centerY, NULL);
-            LineTo(hdc, centerX + toX, centerY - toY);
+ 
 
-            // 長針を描画
-            int longLen = 80; // 短針の長さ
-            toX = longLen * sin(2 * M_PI / 60.0 * stTime.wMinute);
-            toY = longLen * cos(2 * M_PI / 60.0 * stTime.wMinute);
-            MoveToEx(hdc, centerX, centerY, NULL);
-            LineTo(hdc, centerX + toX, centerY - toY);
 
             EndPaint(hDlg, &ps);
         }
