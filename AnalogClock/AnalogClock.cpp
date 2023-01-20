@@ -215,6 +215,7 @@ INT_PTR CALLBACK DialogProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
                 if (index == 0) is24h = false;
                 else is24h = true;
             }
+            return TRUE;
         }
         return TRUE;
     case WM_TIMER:
