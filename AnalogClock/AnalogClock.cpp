@@ -254,8 +254,8 @@ INT_PTR CALLBACK DialogProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
             // 目盛りを描画
             for (int i = 0; i < 12; i++) {
                 double fromX = (radius - scaleLen) * sin(2 * M_PI / 12.0 * i);
-                double toX = radius * sin(2 * M_PI / 12.0 * i);
                 double fromY = (radius - scaleLen) * cos(2 * M_PI / 12.0 * i);
+                double toX = radius * sin(2 * M_PI / 12.0 * i);
                 double toY = radius * cos(2 * M_PI / 12.0 * i);
                 MoveToEx(hdc, centerX + fromX, centerY + fromY, NULL);
                 LineTo(hdc, centerX + toX, centerY + toY);
