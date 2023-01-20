@@ -53,6 +53,8 @@ INT_PTR CALLBACK DialogProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
 
     static bool isDigital = true;
 
+    static HPEN hPen;
+
     //ダイアログプロシージャ
     switch (uMsg)
     {
@@ -143,13 +145,20 @@ INT_PTR CALLBACK DialogProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
             DEFAULT_PITCH,        // フォントのピッチとファミリを指定
             L"ＭＳ Ｐゴシック" // フォント名
         );
+
+        hPen = CreatePen(
+            PS_SOLID,
+            4,
+            RGB(0, 0, 0)
+        );
+
         return TRUE;
     }
     case WM_COMMAND:
         switch (LOWORD(wParam)) {
         case IDC_RADIO_DIGITAL:
             if (HIWORD(wParam) == BN_CLICKED) {
-                isDigital = true; 
+                isDigital = true;
             }
             return TRUE;
         case IDC_RADIO_ANALOG:
@@ -239,7 +248,7 @@ INT_PTR CALLBACK DialogProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
         }
         else {
             hdc = BeginPaint(hDlg, &ps);
- 
+
 
 
             EndPaint(hDlg, &ps);
@@ -252,6 +261,7 @@ INT_PTR CALLBACK DialogProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
     case WM_DESTROY:
         DeleteObject(hFont);
         DeleteObject(hAmPmFont);
+        DeleteObject(hPen);
         PostQuitMessage(0);
         return TRUE;
     }
