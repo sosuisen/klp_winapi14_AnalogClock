@@ -260,10 +260,11 @@ INT_PTR CALLBACK DialogProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
             int scaleLen = 7; // 目盛りの長さ
             // 目盛りを描画
             for (int i = 0; i < 12; i++) {
-                double fromX = (radius - scaleLen) * sin(2 * M_PI / 12.0 * i);
-                double toX = radius * sin(2 * M_PI / 12.0 * i);
-                double fromY = (radius - scaleLen) * cos(2 * M_PI / 12.0 * i);
-                double toY = radius * cos(2 * M_PI / 12.0 * i);
+                double angle = 2 * M_PI / 12.0 * i;
+                double fromX = (radius - scaleLen) * sin(angle);
+                double fromY = (radius - scaleLen) * cos(angle);
+                double toX = radius * sin(angle);
+                double toY = radius * cos(angle);
                 MoveToEx(hdc, centerX + fromX, centerY + fromY, NULL);
                 LineTo(hdc, centerX + toX, centerY + toY);
             }
