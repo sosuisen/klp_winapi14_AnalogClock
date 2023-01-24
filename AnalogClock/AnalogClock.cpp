@@ -48,6 +48,7 @@ INT_PTR CALLBACK DialogProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
     int fontSizeDelta = 10;
 
     static bool is24h = true;
+    static std::wstring ampm[] = { L"AM", L"PM" };
     static HFONT hAmPmFont;
     static int currentFontSize;
 
@@ -211,31 +212,32 @@ INT_PTR CALLBACK DialogProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
         GetLocalTime(&stTime);
 
         if (isDigital) {
-            int hour;
-            if (is24h) hour = stTime.wHour;
-            else hour = stTime.wHour % 12;
-            std::wstring strClock = std::format(L"{:02}:{:02}:{:02}", hour, stTime.wMinute, stTime.wSecond);
-
-            hdc = BeginPaint(hDlg, &ps);
+            hdc = BeginPaint(hDlg, &ps);       // 描画開始
             SelectObject(hdc, hFont);
             SetBkMode(hdc, TRANSPARENT);
             SetTextColor(hdc, RGB(180, 220, 180));
-            RECT rc = { 10, 30, 450, 300 };
-            DrawText(hdc, strClock.c_str(), -1, &rc, DT_CENTER | DT_VCENTER);
 
-            if (!is24h) {
+            RECT rc = { 10, 30, 450, 300 };
+            if (is24h) {
+                // 24時間表示の場合
+                std::wstring strClock = std::format(L"{:02}:{:02}:{:02}", stTime.wHour, stTime.wMinute, stTime.wSecond);
+                DrawText(hdc, strClock.c_str(), -1, &rc, DT_CENTER | DT_VCENTER);
+            }
+            else {
+                // 12時間表示の場合
+                div_t divHour = div(stTime.wHour, 12);
+                // divHour.rem は stTime.wHourを12で割った余り（0から11）
+                std::wstring strClock = std::format(L"{:02}:{:02}:{:02}", divHour.rem, stTime.wMinute, stTime.wSecond);
+                DrawText(hdc, strClock.c_str(), -1, &rc, DT_CENTER | DT_VCENTER);
+
+                // AM/PM表示。表示位置は時刻表示の下
+                rc.top += currentFontSize;
                 SelectObject(hdc, hAmPmFont);
-                RECT rcAmPm = { 10, 30 + currentFontSize, 450, 300 };
-                if (stTime.wHour > 12) {
-                    DrawText(hdc, L"PM", -1, &rcAmPm, DT_CENTER | DT_VCENTER);
-                }
-                else {
-                    DrawText(hdc, L"AM", -1, &rcAmPm, DT_CENTER | DT_VCENTER);
-                }
+                // divHour.quot は stTime.wHour を12で割った商（0か1）
+                DrawText(hdc, ampm[divHour.quot].c_str(), -1, &rc, DT_CENTER | DT_VCENTER);
             }
 
-            EndPaint(hDlg, &ps);
-
+            EndPaint(hDlg, &ps);              // 描画終了
         }
         else {
             hdc = BeginPaint(hDlg, &ps);
@@ -245,7 +247,7 @@ INT_PTR CALLBACK DialogProc(HWND hDlg, UINT uMsg, WPARAM wParam, LPARAM lParam)
             int scaleLen = 7; // 目盛りの長さ
             // 目盛りを描画
             for (int i = 0; i < 12; i++) {
-                double angle = 2 * M_PI / 12.0 * i;
+            double angle = 2 * M_PI / 12.0 * i;
                 double fromX = (radius - scaleLen) * sin(angle);
                 double fromY = (radius - scaleLen) * cos(angle);
                 double toX = radius * sin(angle);
